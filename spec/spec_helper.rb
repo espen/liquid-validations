@@ -4,7 +4,6 @@ require 'rubygems'
 require 'active_record'
 require 'liquid'
 require 'liquid-validations'
-require 'minitest/spec'
 require 'minitest/autorun'
 require 'minitest/pride'
 
