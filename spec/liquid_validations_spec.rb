@@ -38,7 +38,7 @@ describe LiquidValidations do
     it "should include the errors in the errors object" do
       @mixin.content = "{{ unclosed variable "
       @mixin.valid?
-      @mixin.errors.full_messages.any? { |e| e == "Variable '{{' was not properly closed in your content" }.must_equal true
+      @mixin.errors.full_messages.any? { |e| e == " syntax error: Variable '{{' was not properly closed in your content" }.must_equal true
     end
   end
 
