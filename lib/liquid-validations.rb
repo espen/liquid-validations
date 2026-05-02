@@ -56,7 +56,7 @@ module LiquidValidations
       max = configuration[:max]
       patterns = []
       tag = configuration[:tag]
-      required_tag = ""
+      required_tag = String.new
       if tag.is_a? Array
         patterns = tag.map do |e|
           /{%\s+#{e}\s+(.*?)%}/
@@ -97,7 +97,7 @@ module LiquidValidations
   end
 
   def get_max_tag(tag, value, max)
-    max_tag = ""
+    max_tag = String.new
     tag.each do |ele|
       if value.scan(/{% #{ele} %}/).size > max
         max_tag << "{% #{ele} %}"
