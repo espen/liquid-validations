@@ -279,5 +279,19 @@ describe LiquidValidations do
         @mixin.errors.full_messages.any? { |e| e == "content must not have more than 2 {% josh_is_awesome %}" }.must_equal true
       end
     end
+
+    describe "When tag contanis array of tag, complex pattern and presence is false" do
+      before do
+        Mixin.instance_eval do
+          validates_liquid_tag :content, tag: ['date_of_birth', 'national_id_no', 'street',  'postal_code', 'city', 'country_code', 'count', 'note'], max: 1, presence: false, :allow_blank => true
+        end
+        @mixin = Mixin.new
+      end
+      it "must be valid when the content is nil" do
+        @mixin.content = "{% name %} {% email %} {% street 'Adresse', 'data-required=true' %} {% street 'Sted', 'data-required=true' %}"
+        @mixin.valid?
+        @mixin.errors.full_messages.any? { |e| e == "content must not have more than 1 {% street %}" }.must_equal true
+      end
+    end
   end
 end

@@ -99,7 +99,7 @@ module LiquidValidations
   def get_max_tag(tag, value, max)
     max_tag = String.new
     tag.each do |ele|
-      if value.scan(/{% #{ele} %}/).size > max
+      if value.scan(/{%\s+#{ele}\s+(.*?)%}/).size > max
         max_tag << "{% #{ele} %}"
       end
     end
