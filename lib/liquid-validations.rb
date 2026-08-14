@@ -16,7 +16,7 @@ module LiquidValidations
       end
 
       for error in errors
-        record.errors.add(:base, friendly_liquid_error(error) + " in your #{friendly_attr_name(attr_name)}")
+        record.errors.add(attr_name, friendly_liquid_error(error))
       end
     end
   end
@@ -34,9 +34,9 @@ module LiquidValidations
       container_re = /<\s*#{container}.*>.*#{variable_re}.*<\/\s*#{container}\s*>/im
 
       if container.blank? && !(value =~ variable_re)
-        record.errors.add(:base, "You must include {{ #{variable} }} in your #{friendly_attr_name(attr_name)}")
+        record.errors.add(attr_name, "must include {{ #{variable} }}")
       elsif !container.blank? && !(value =~ container_re)
-        record.errors.add(:base, "You must include {{ #{variable} }} inside the <#{container}> tag of your #{friendly_attr_name(attr_name)}")
+        record.errors.add(attr_name, "must include {{ #{variable} }} inside the <#{container}> tag")
       end
     end
   end
@@ -65,21 +65,21 @@ module LiquidValidations
           required_tag << "{% #{ele} %}"
         end
         if (!(patterns.all? { |p| p =~ (value) }) && presence)
-          record.errors.add(:base, "You must supply #{required_tag} in your #{friendly_attr_name(attr_name)}")
+          record.errors.add(attr_name, "must include #{required_tag}")
         elsif presence && check_occurance(patterns, value, max)
-          record.errors.add(:base, "#{friendly_attr_name(attr_name)} must not have more than #{max} #{get_max_tag(tag, value, max)}")
+          record.errors.add(attr_name, "must not have more than #{max} #{get_max_tag(tag, value, max)}")
         elsif !presence && check_occurance(patterns, value, max)
-          record.errors.add(:base, "#{friendly_attr_name(attr_name)} must not have more than #{max} #{get_max_tag(tag, value, max)}")
+          record.errors.add(attr_name, "must not have more than #{max} #{get_max_tag(tag, value, max)}")
         end
       else
         tag = configuration[:tag].to_s
         tag_r = /{%\s+#{tag}\s+(.*?)%}/
         if (!(value =~ tag_r) && presence)
-          record.errors.add(:base, "You must supply {% #{tag} %} in your #{friendly_attr_name(attr_name)}")
+          record.errors.add(attr_name, "must include {% #{tag} %}")
         elsif presence && (value.scan(tag_r).size > max)
-          record.errors.add(:base, "#{friendly_attr_name(attr_name)} must not have more than #{max} {% #{tag} %}")
+          record.errors.add(attr_name, "must not have more than #{max} {% #{tag} %}")
         elsif !presence && (value.scan(tag_r).size > max)
-          record.errors.add(:base, "#{friendly_attr_name(attr_name)} must not have more than #{max} {% #{tag} %}")
+          record.errors.add(attr_name, "must not have more than #{max} {% #{tag} %}")
         end
       end
     end
@@ -106,12 +106,8 @@ module LiquidValidations
     max_tag
   end
 
-  def friendly_attr_name(attr_name)
-    attr_name.to_s.humanize.downcase
-  end
-
   def friendly_liquid_error(error)
-    error.gsub(/liquid/i, "").gsub(/terminated with regexp:.+/, "closed")
+    error.gsub(/liquid/i, "").gsub(/terminated with regexp:.+/, "closed").strip
   end
 end
 
